@@ -2,6 +2,7 @@
 using Blogb.Data.Entities;
 using Blogb.Models;
 using Microsoft.EntityFrameworkCore;
+using Blogb.Extensions;
 
 namespace Blogb.Services
 {
