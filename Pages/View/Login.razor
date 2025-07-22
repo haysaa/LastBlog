@@ -1,4 +1,4 @@
-﻿@page "/"
+﻿@page "/login"
 @layout LoginLayout
 @using Blogb.Models
 @using Blogb.Shared.Layouts;
@@ -69,7 +69,7 @@
                 }
                 else
                 {
-                    NavigationManager.NavigateTo("/main forceLoad: true");
+                    NavigationManager.NavigateTo("/feed forceLoad: true");
                 }
             }
         }

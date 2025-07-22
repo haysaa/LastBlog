@@ -13,9 +13,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
-builder.Services.AddTransient<UserService>();
-//                .AddTransient<CategoryService>()
-//                .AddTransient<BlogPostService>();
+builder.Services.AddTransient<UserService>()
+                .AddTransient<CategoryService>()
+                .AddTransient<BlogPostService>();
 builder.Services.AddHttpClient();
 
 builder.Services.AddScoped<Blogb.Authentication.AuthenticationService>();
