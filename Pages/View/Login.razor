@@ -1,0 +1,85 @@
+﻿@page "/"
+@layout LoginLayout
+@using Blogb.Models
+@using Blogb.Shared.Layouts;
+@using Blogb.Authentication;
+@inject BlogAuthenticationStateProvider BlogAuthStateProvider
+@inject NavigationManager NavigationManager
+
+
+@if (_isProcessing)
+{
+    <div class="overlay position-fixed"></div>
+    <div class="loading-wrapper position-fixed d-flex justify-content-center align-items-center">
+        <div class="loading-text fs-1 text-white">Loading...</div>
+    </div>
+}
+
+<EditForm Model="@_model" OnValidSubmit="@LoginAsync">
+    <DataAnnotationsValidator />
+    <div class="container mt-5 d-flex justify-content-center">
+        <div class="card shadow p-4" style="width: 450px;">
+            <h3 class="text-center mb-4">Blog Login</h3>
+
+            <div class="mb-3">
+                <label class="form-label">User Name</label>
+                <InputText @bind-Value="_model.Username" class="form-control" placeholder="User Name" />
+                <ValidationMessage For="@(() => _model.Username)" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Password</label>
+                <InputText type="password" @bind-Value="_model.Password" class="form-control" placeholder="Password" />
+                <ValidationMessage For="@(() => _model.Password)" />
+            </div>
+
+            @if (!string.IsNullOrWhiteSpace(_error))
+            {
+                <p class="text-danger text-center">@_error</p>
+            }
+
+            <button type="submit" class="btn btn-success w-100">Login</button>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    private LoginModel _model = new();
+    private bool _isProcessing = false;
+    private string? _error = null;
+
+    private async Task LoginAsync()
+    {
+        _error = null;
+        _isProcessing = true;
+        try
+        {
+            _error = await BlogAuthStateProvider.LoginAsync(_model);
+            if (!string.IsNullOrWhiteSpace(_error))
+            {
+                _isProcessing = false;
+            }
+            else
+            {
+                var loggedInUser = BlogAuthStateProvider.LoggedInUser;
+                if (loggedInUser.IsEmpty)
+                {
+                    _error = "Login failed please try again.";
+                    _isProcessing = false;
+                }
+                else
+                {
+                    NavigationManager.NavigateTo("/feed", forceLoad: true);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            _error = $"Hata: {ex.Message}";
+        }
+        finally
+        {
+            _isProcessing = false;
+        }
+    }
+}

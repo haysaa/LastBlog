@@ -1,0 +1,67 @@
+﻿@page "/feed"
+@layout MainLayout
+@inject HttpClient Http
+
+<h3 class="mb-4">Feed | Posts and Comments</h3>
+
+@if (posts == null)
+{
+    <p>Loading posts...</p>
+}
+else if (!posts.Any())
+{
+    <p>No posts available yet.</p>
+}
+else
+{
+    @foreach (var post in posts)
+    {
+        <div class="card mb-4 shadow">
+            <div class="card-header bg-primary text-white">
+                <h5>@post.Title</h5>
+            </div>
+            <div class="card-body">
+                <p>@post.Content</p>
+            </div>
+            <div class="card-footer">
+                <h6>Comments:</h6>
+                @if (post.Comments != null && post.Comments.Any())
+                {
+                    <ul class="list-group">
+                        @foreach (var comment in post.Comments)
+                        {
+                            <li class="list-group-item">@comment.Content</li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <p class="text-muted">No comments yet.</p>
+                }
+            </div>
+        </div>
+    }
+}
+
+@code {
+    private List<PostDto> posts;
+
+    protected override async Task OnInitializedAsync()
+    {
+        posts = await Http.GetFromJsonAsync<List<PostDto>>("api/posts-with-comments");
+    }
+
+    public class PostDto
+    {
+        public int PostId { get; set; }
+        public string Title { get; set; }
+        public string Content { get; set; }
+        public List<CommentDto> Comments { get; set; } = new();
+    }
+
+    public class CommentDto
+    {
+        public int CommentId { get; set; }
+        public string Content { get; set; }
+    }
+}

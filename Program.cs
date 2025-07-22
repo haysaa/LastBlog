@@ -16,8 +16,10 @@ builder.Services.AddServerSideBlazor();
 builder.Services.AddTransient<UserService>();
 //                .AddTransient<CategoryService>()
 //                .AddTransient<BlogPostService>();
+builder.Services.AddHttpClient();
 
-builder.Services.AddScoped<Microsoft.AspNetCore.Authentication.AuthenticationService>();
+builder.Services.AddScoped<Blogb.Authentication.AuthenticationService>();
+
 builder.Services.AddScoped<BlogAuthenticationStateProvider>();
 builder.Services.AddScoped<AuthenticationStateProvider>(serviceProvider =>
     serviceProvider.GetRequiredService<BlogAuthenticationStateProvider>());

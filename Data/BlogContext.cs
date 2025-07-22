@@ -38,6 +38,20 @@ namespace  Blogb.Data
                         Hash = "dfhkhsdskdfffgfjgfjgkdfhjgkdf/="
                     }
                 );
+
+
+            modelBuilder.Entity<User>()
+                .HasData(
+                    new User
+                    {
+                        Id = 2,
+                        Email = "kubrakilic@outlook.com",
+                        FirstName = "Kubra",
+                        LastName = "Kilic",
+                        Salt = "fksodıhjfoısjdflsdflısj",
+                        Hash = "dfhkhsdskdfffgfjgfjgkdfhjgkdf/="
+                    }
+                );
         }
     }
 }
