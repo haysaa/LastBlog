@@ -1,39 +1,50 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="">Blogb</a>
-        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+﻿
+@using Blogb.Authentication;
+@inject BlogAuthenticationStateProvider BlogAuthStateProvider
+@inject NavigationManager NavigationManager
+
+<div class="d-flex vh-100">
+    <!-- Sidebar -->
+    <div class="bg-dark p-3" style="width: 250px;">
+        <h2 class="text-light mb-4">Blazing Blog</h2>
+
+        <NavLink href="/" class="nav-link text-light mb-2">Home</NavLink>
+        <NavLink href="/about" class="nav-link text-light mb-2">About</NavLink>
+
+        <AuthorizeView>
+            <Authorized>
+                <NavLink href="/admin/manage-categories" class="nav-link text-light mb-2">Manage Categories</NavLink>
+                <NavLink href="/admin/manage-blogs" class="nav-link text-light mb-2">Manage Blogs</NavLink>
+            </Authorized>
+        </AuthorizeView>
+
+        <hr class="border-light" />
+
+        <AuthorizeView>
+            <Authorizing>
+                <p class="text-light">Checking auth...</p>
+            </Authorizing>
+            <Authorized>
+                <div class="text-light mb-2 fw-bold">@context.User?.Identity?.Name</div>
+                <button class="btn btn-danger w-100" @onclick="LogoutAsync">Logout</button>
+            </Authorized>
+            <NotAuthorized>
+                <NavLink href="/login" class="btn btn-primary w-100">Login</NavLink>
+            </NotAuthorized>
+        </AuthorizeView>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex-fill p-4">
+      
+        <h1>Welcome to  Blog!</h1>
     </div>
 </div>
 
-<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
-    <nav class="flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="oi oi-home" aria-hidden="true"></span> Home
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="oi oi-plus" aria-hidden="true"></span> Counter
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="fetchdata">
-                <span class="oi oi-list-rich" aria-hidden="true"></span> Fetch data
-            </NavLink>
-        </div>
-    </nav>
-</div>
-
 @code {
-    private bool collapseNavMenu = true;
-
-    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
-
-    private void ToggleNavMenu()
+    private async Task LogoutAsync()
     {
-        collapseNavMenu = !collapseNavMenu;
+        await BlogAuthStateProvider.LogoutAsync();
+        NavigationManager.NavigateTo("");
     }
 }

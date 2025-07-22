@@ -1,0 +1,12 @@
+﻿@page "/main"
+@inject AuthenticationStateProvider AuthProvider
+
+<AuthorizeView>
+    <Authorized>
+        <h1>Ana Sayfa</h1>
+        <p>Giriş yaptınız, hoş geldiniz!</p>
+    </Authorized>
+    <NotAuthorized>
+        <p>Giriş yapmadan bu sayfayı göremezsiniz.</p>
+    </NotAuthorized>
+</AuthorizeView>

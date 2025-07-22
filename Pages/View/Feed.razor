@@ -1,67 +1,72 @@
-﻿@page "/feed"
-@layout MainLayout
-@inject HttpClient Http
+﻿@page "/main"
+@page "/c/{CategorySlug}/posts"
 
-<h3 class="mb-4">Feed | Posts and Comments</h3>
+@using Blogb.Authentication;
+@using Blogb.Services;
+@inject BlogPostService BlogPostService
+@inject CategoryService CategoryService
 
-@if (posts == null)
-{
-    <p>Loading posts...</p>
-}
-else if (!posts.Any())
-{
-    <p>No posts available yet.</p>
-}
-else
-{
-    @foreach (var post in posts)
-    {
-        <div class="card mb-4 shadow">
-            <div class="card-header bg-primary text-white">
-                <h5>@post.Title</h5>
-            </div>
-            <div class="card-body">
-                <p>@post.Content</p>
-            </div>
-            <div class="card-footer">
-                <h6>Comments:</h6>
-                @if (post.Comments != null && post.Comments.Any())
-                {
-                    <ul class="list-group">
-                        @foreach (var comment in post.Comments)
-                        {
-                            <li class="list-group-item">@comment.Content</li>
-                        }
-                    </ul>
-                }
-                else
-                {
-                    <p class="text-muted">No comments yet.</p>
-                }
-            </div>
+<PageTitle>@heading | Blog</PageTitle>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-9">
+            <h1 class="fs-3">@heading</h1>
+            <hr />
+            @if (isLoading)
+            {
+                <p>Loading posts...</p>
+            }
+            else if (!posts.Any())
+            {
+                <div class="d-flex justify-content-center flex-column align-items-center" style="min-height: 250px">
+                    <h3>No blog posts found</h3>
+                    <AuthorizeView>
+                        <Authorized>
+                            <NavLink href="/admin/manage-blogs/new" class="btn btn-primary">Click here to create a new blog post</NavLink>
+                        </Authorized>
+                        <NotAuthorized>
+                            <p>Please check back later</p>
+                        </NotAuthorized>
+                    </AuthorizeView>
+                </div>
+            }
+            else
+            {
+                <BlogPostsList Posts="posts" />
+            }
         </div>
-    }
-}
+
+        <div class="col-sm-3">
+            <CategoriesBox CategorySlug="@CategorySlug" OnCategoryNameFound="SetHeading" />
+        </div>
+    </div>
+</div>
 
 @code {
-    private List<PostDto> posts;
+    [Parameter] public string? CategorySlug { get; set; }
 
-    protected override async Task OnInitializedAsync()
+    private string heading = "Latest Posts";
+    private IEnumerable<BlogPost> posts = Enumerable.Empty<BlogPost>();
+    private bool isLoading = true;
+
+    protected override async Task OnParametersSetAsync() => await LoadPostsAsync();
+
+    private async Task LoadPostsAsync()
     {
-        posts = await Http.GetFromJsonAsync<List<PostDto>>("api/posts-with-comments");
+        isLoading = true;
+        try
+        {
+            posts = await BlogPostService.GetPostsAsync(publishedOnly: true, CategorySlug);
+        }
+        finally
+        {
+            isLoading = false;
+        }
     }
 
-    public class PostDto
+    private void SetHeading(string? categoryName = null)
     {
-        public int PostId { get; set; }
-        public string Title { get; set; }
-        public string Content { get; set; }
-        public List<CommentDto> Comments { get; set; } = new();
-    }
-
-    public class CommentDto
-    {
-        public int CommentId { get; set; }
-        public string Content { get; set; }
+        heading = !string.IsNullOrWhiteSpace(categoryName) ? $"Latest {categoryName} Posts" : "Latest Posts";
     }
 }

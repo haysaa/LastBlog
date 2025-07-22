@@ -1,19 +1,29 @@
 ﻿@inherits LayoutComponentBase
 
-<PageTitle>Blog Login</PageTitle>
+<div class="d-flex vh-100">
+    <!-- Sidebar -->
+    <div class="bg-dark p-3" style="width: 250px;">
+        <h2 class="text-light mb-4">Blazing Blog</h2>
 
-<div class="login-layout d-flex flex-column justify-content-center align-items-center vh-100">
-    <div class="login-box p-5 rounded shadow" style="background-color: #ffffff; width: 400px;">
-        <div class="text-center mb-4">
-            <h2 class="fw-bold">Blog Giriş</h2>
-            <p class="text-muted">Hesabına </p>
-        </div>
+        <NavLink href="/main" class="nav-link text-light mb-2">Feed</NavLink>
+        <NavLink href="/about" class="nav-link text-light mb-2"></NavLink>
 
+        <hr class="border-light" />
+
+        <AuthorizeView>
+            <Authorized>
+                <p class="text-light fw-bold">@context.User?.Identity?.Name</p>
+                <NavLink href="/logout" class="btn btn-danger w-100">Logout</NavLink>
+            </Authorized>
+            <NotAuthorized>
+                <NavLink href="/login" class="btn btn-primary w-100">Login</NavLink>
+            </NotAuthorized>
+        </AuthorizeView>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex-fill p-4">
         @Body
-
-        <div class="mt-4 text-center text-muted">
-            © @DateTime.Now.Year Blog
-        </div>
     </div>
 </div>
 
@@ -22,28 +32,3 @@
 
 
 
-
-
-
-
-
-@* @inherits LayoutComponentBase
-
-<PageTitle>Blogb</PageTitle>
-
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
-
-    <main>
-        <div class="top-row px-4">
-            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
-        </div>
-
-        <article class="content px-4">
-            @Body
-        </article>
-    </main>
-</div>
- *@
