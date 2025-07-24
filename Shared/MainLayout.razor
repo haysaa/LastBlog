@@ -1,19 +1,54 @@
 ﻿@inherits LayoutComponentBase
 
-<PageTitle>Blogb</PageTitle>
+@using Blogb.Authentication;
+@inject BlogAuthenticationStateProvider BlogAuthStateProvider
+@inject NavigationManager NavigationManager
 
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
+<div class="d-flex vh-100">
+    <!-- Sidebar -->
+    <div class="bg-dark p-3 d-flex flex-column justify-content-between" style="width: 250px;">
+        <div>
+            <h2 class="text-light mb-4">MYBlog</h2>
 
-    <main>
-        <div class="top-row px-4">
-            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+            <NavLink href="/" class="nav-link text-light mb-2">🏠 Home</NavLink>
+            <NavLink href="/about" class="nav-link text-light mb-2">ℹ️ About</NavLink>
+            <NavLink href="/feed" class="nav-link text-light mb-2">📰 Feed</NavLink>
+
+            <AuthorizeView>
+                <Authorized>
+                    <NavLink href="/admin/manage-categories" class="nav-link text-light mb-2">📂 Manage Categories</NavLink>
+                    <NavLink href="/admin/manage-blogs" class="nav-link text-light mb-2">📝 Manage Blogs</NavLink>
+                </Authorized>
+            </AuthorizeView>
         </div>
 
-        <article class="content px-4">
-            @Body
-        </article>
-    </main>
+        <div>
+            <hr class="border-light" />
+            <AuthorizeView>
+                <Authorizing>
+                    <p class="text-light">Checking auth...</p>
+                </Authorizing>
+                <Authorized>
+                    <div class="text-light mb-2 fw-bold">👤 @context.User?.Identity?.Name</div>
+                    <button class="btn btn-danger w-100" @onclick="LogoutAsync">Logout</button>
+                </Authorized>
+                <NotAuthorized>
+                    <NavLink href="/login" class="btn btn-primary w-100">Login</NavLink>
+                </NotAuthorized>
+            </AuthorizeView>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex-fill p-4 overflow-auto bg-light">
+        @Body
+    </div>
 </div>
+
+@code {
+    private async Task LogoutAsync()
+    {
+        await BlogAuthStateProvider.LogoutAsync();
+        NavigationManager.NavigateTo("/");
+    }
+}

@@ -20,12 +20,11 @@ namespace Blogb.Services
                             .FirstOrDefaultAsync(u => u.Email == model.Username);
             if (dbUser is not null)
             {
-                // Login success
                 return new LoggedInUser(dbUser.Id, $"{dbUser.FirstName} {dbUser.LastName}".Trim());
             }
             else
             {
-                // Login failed
+                
                 return null;
             }
         }

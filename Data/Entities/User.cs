@@ -22,5 +22,6 @@ namespace Blogb.Data.Entities
 
         [Required, MaxLength(100)]
         public string Hash { get; set; }
+
     }
 }
